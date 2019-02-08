@@ -45,9 +45,11 @@ bool                game_over;
 
 int main() {
 
+    uBit.init();
+
     while (1) {
 
-        uBit.init();
+        uBit.display.scroll("PACMAN");
 
         initialise_game();
 
@@ -93,6 +95,8 @@ void handle_player_movement() {
 }
 
 void handle_enemy_movement() {
+
+    uBit.sleep(2000);
 
     while (!game_over) {
 
@@ -156,8 +160,6 @@ void initialise_game() {
 
     game_over = false;
     uBit.display.image.setPixelValue(player.x, player.y, 255);
-
-
 }
 
 void check_game_status() {
