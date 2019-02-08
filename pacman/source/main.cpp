@@ -98,6 +98,9 @@ void handle_enemy_movement() {
 
     uBit.sleep(2000);
 
+    enemies.clear();
+    enemies.push_back(new Enemy);
+
     while (!game_over) {
 
         uBit.sleep(500);
@@ -126,12 +129,15 @@ void handle_enemy_movement() {
 
 void handle_screen_updates() {
 
-    uBit.sleep(10);
-    uBit.display.clear();
-    uBit.display.image.setPixelValue(player.x, player.y, 255);
-    for (Enemy* enemy : enemies) {
+    while (!game_over) {
 
-        uBit.display.image.setPixelValue(enemy->x, enemy->y, 255);
+        uBit.sleep(10);
+        uBit.display.clear();
+        uBit.display.image.setPixelValue(player.x, player.y, 255);
+        for (Enemy* enemy : enemies) {
+
+            uBit.display.image.setPixelValue(enemy->x, enemy->y, 255);
+        }
     }
 }
 
@@ -147,28 +153,30 @@ void track_score() {
 
 void initialise_game() {
 
+    game_over = false;
+
     player.init();
     create_fiber(handle_player_movement);
-
-    uBit.sleep(2500);
-
-    enemies.clear();
-    enemies.push_back(new Enemy);
     create_fiber(handle_enemy_movement);
-
     create_fiber(track_score);
+    create_fiber(handle_screen_updates);
+    create_fiber(check_game_status);
 
-    game_over = false;
     uBit.display.image.setPixelValue(player.x, player.y, 255);
 }
 
 void check_game_status() {
 
-    for (Enemy* enemy : enemies) {
+    while (!game_over) {
 
-        if (player.x == enemy->y && player.y == enemy->y) {
+        uBit.sleep(10);
 
-            game_over = true;
+        for (Enemy* enemy : enemies) {
+
+            if (player.x == enemy->y && player.y == enemy->y) {
+
+                game_over = true;
+            }
         }
     }
 }
