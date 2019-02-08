@@ -133,6 +133,7 @@ void track_score() {
 
     while (!game_over) {
 
+        // TODO: add a score modifier here (number of enemies && speed?)
         uBit.sleep(2500);
         player.score++;
     }
