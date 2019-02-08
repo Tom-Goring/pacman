@@ -62,6 +62,8 @@ int main() {
         uBit.display.scroll("GAME OVER");
         uBit.display.scroll("SCORE:");
         uBit.display.print(player.score);
+
+        uBit.sleep(5000); // TODO: add a button press to go back the the start
     }
 }
 
