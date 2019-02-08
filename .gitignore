@@ -3,4 +3,4 @@ cmake-build-debug
 yotta_targets
 yotta_modules
 pacman/build
-.idea/
+.idea/*
