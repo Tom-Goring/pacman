@@ -1,6 +1,9 @@
 #include "MicroBit.h"
 #include <vector>
 
+// TODO: Add difficulty and score scaling
+// TODO: Add some form of other input usage
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 
