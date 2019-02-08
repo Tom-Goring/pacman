@@ -45,25 +45,24 @@ bool                game_over;
 
 int main() {
 
-    uBit.init();
+    while (1) {
 
-    initialise_game();
+        uBit.init();
 
-    create_fiber(handle_player_movement);
-    create_fiber(handle_enemy_movement);
-    create_fiber(track_score);
+        initialise_game();
 
-    while (!game_over) {
+        while (!game_over) {
 
-        handle_screen_updates();
-        check_game_status();
+            handle_screen_updates();
+            check_game_status();
+        }
+
+        uBit.serial.send(game_over);
+
+        uBit.display.scroll("GAME OVER");
+        uBit.display.scroll("SCORE:");
+        uBit.display.print(player.score);
     }
-
-    uBit.serial.send(game_over);
-
-    uBit.display.scroll("GAME OVER");
-    uBit.display.scroll("SCORE:");
-    uBit.display.print(player.score);
 }
 
 void handle_player_movement() {
@@ -142,10 +141,20 @@ void track_score() {
 void initialise_game() {
 
     player.init();
+    create_fiber(handle_player_movement);
+
+    uBit.sleep(2500);
+
     enemies.clear();
     enemies.push_back(new Enemy);
+    create_fiber(handle_enemy_movement);
+
+    create_fiber(track_score);
+
     game_over = false;
     uBit.display.image.setPixelValue(player.x, player.y, 255);
+
+
 }
 
 void check_game_status() {
