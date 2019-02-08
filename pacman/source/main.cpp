@@ -144,11 +144,11 @@ void track_score() {
 void initialise_game() {
 
     player.init();
+    enemies.clear();
     create_fiber(handle_player_movement);
 
     uBit.sleep(2500);
 
-    enemies.clear();
     enemies.push_back(new Enemy);
     create_fiber(handle_enemy_movement);
 
