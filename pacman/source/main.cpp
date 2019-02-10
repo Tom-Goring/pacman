@@ -12,7 +12,7 @@ void handle_enemy_movement();
 void handle_screen_updates();
 void track_score();
 void initialise_game();
-void check_game_status();
+bool check_game_status();
 
 class Player {
 public:
@@ -56,7 +56,7 @@ int main() {
         while (!game_over) {
 
             handle_screen_updates();
-            check_game_status();
+            game_over = check_game_status();
         }
 
         uBit.serial.send(game_over);
@@ -105,6 +105,16 @@ void handle_enemy_movement() {
 
         uBit.sleep(500);
 
+        if (player.score > 10 && enemies.size() < 2) {
+
+            enemies.push_back(new Enemy());
+        }
+        else if (player.score > 25 && enemies.size() < 3) {
+
+            enemies.push_back(new Enemy());
+        }
+
+
         for (Enemy* enemy : enemies) {
 
             if (player.x < enemy->x && enemy->x != 0) {
@@ -129,15 +139,11 @@ void handle_enemy_movement() {
 
 void handle_screen_updates() {
 
-    while (!game_over) {
-
-        uBit.sleep(10);
-        uBit.display.clear();
-        uBit.display.image.setPixelValue(player.x, player.y, 255);
-        for (Enemy* enemy : enemies) {
-
-            uBit.display.image.setPixelValue(enemy->x, enemy->y, 255);
-        }
+    uBit.sleep(10);
+    uBit.display.clear();
+    uBit.display.image.setPixelValue(player.x, player.y, 255);
+    for (Enemy* enemy : enemies) {
+        uBit.display.image.setPixelValue(enemy->x, enemy->y, 255);
     }
 }
 
@@ -145,9 +151,8 @@ void track_score() {
 
     while (!game_over) {
 
-        // TODO: add a score modifier here (number of enemies && speed?)
         uBit.sleep(2500);
-        player.score++;
+        player.score += enemies.size();
     }
 }
 
@@ -159,26 +164,20 @@ void initialise_game() {
     create_fiber(handle_player_movement);
     create_fiber(handle_enemy_movement);
     create_fiber(track_score);
-    create_fiber(handle_screen_updates);
-    create_fiber(check_game_status);
+    //create_fiber(handle_screen_updates);
+    //create_fiber(check_game_status);
 
     uBit.display.image.setPixelValue(player.x, player.y, 255);
 }
 
-void check_game_status() {
+bool check_game_status() {
 
-    while (!game_over) {
-
-        uBit.sleep(10);
-
-        for (Enemy* enemy : enemies) {
-
-            if (player.x == enemy->y && player.y == enemy->y) {
-
-                game_over = true;
-            }
+    for (Enemy* enemy : enemies) {
+        if (player.x == enemy->y && player.y == enemy->y) {
+            return true;
         }
     }
+    return false;
 }
 
 #pragma clang diagnostic pop
