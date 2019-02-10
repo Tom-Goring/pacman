@@ -44,4 +44,8 @@ decided (which at this stage does mean they can spawn on top of you!).
 ### Misc Details
 
 The project was coded in CLion using a combination of CMakeLists and a MakeFile
-to automatically run the commands necessary.
+to automatically run the commands necessary. Should you wish to replicate this,
+you need to create a CMakeLists.txt file similar to mine with the correct source
+dirs referenced, a MakeFile with the commands necessary to build and load the
+binaries onto the device, and then create a config in CLion that runs the
+MakeFile when you "run" the project.
