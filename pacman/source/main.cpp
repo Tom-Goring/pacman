@@ -12,6 +12,7 @@ void handle_enemy_movement();
 void handle_screen_updates();
 void track_score();
 void initialise_game();
+void reset_enemies(MicroBitEvent);
 bool check_game_status();
 
 class Player {
@@ -37,11 +38,10 @@ public:
 };
 
 
-MicroBit            uBit;
+MicroBit             uBit;
 std::vector<Enemy*>  enemies;
-Player              player;
-bool                game_over;
-
+Player               player;
+bool                 game_over;
 
 int main() {
 
@@ -59,8 +59,7 @@ int main() {
             game_over = check_game_status();
         }
 
-        uBit.serial.send(game_over);
-
+        uBit.display.clear();
         uBit.display.scroll("GAME OVER");
         uBit.display.scroll("SCORE:");
         uBit.display.print(player.score);
@@ -164,10 +163,17 @@ void initialise_game() {
     create_fiber(handle_player_movement);
     create_fiber(handle_enemy_movement);
     create_fiber(track_score);
-    //create_fiber(handle_screen_updates);
-    //create_fiber(check_game_status);
+
+    uBit.messageBus.listen(MICROBIT_ID_BUTTON_AB, MICROBIT_BUTTON_EVT_CLICK, reset_enemies);
 
     uBit.display.image.setPixelValue(player.x, player.y, 255);
+}
+
+void reset_enemies(MicroBitEvent) {
+
+    enemies.clear();
+    uBit.sleep(2000);
+    enemies.push_back(new Enemy());
 }
 
 bool check_game_status() {
