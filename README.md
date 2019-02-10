@@ -41,6 +41,11 @@ and will "fall" towards whatever edge is closest to the ground. The enemies will
 move towards the player at a steady pace, and their spawn locations are randomly
 decided (which at this stage does mean they can spawn on top of you!).
 
+When the grid gets a little too crowded, or you come too close to an enemy, you
+can press both the buttons on the MicroBit (A&B) together, and the field will be
+cleared of enemies. The number of points you score however, is tied to the
+number of enemies on the grid, so a balance must be struck.
+
 ### Misc Details
 
 The project was coded in CLion using a combination of CMakeLists and a MakeFile
