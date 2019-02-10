@@ -160,6 +160,7 @@ void initialise_game() {
     game_over = false;
 
     player.init();
+    enemies.clear();
     create_fiber(handle_player_movement);
     create_fiber(handle_enemy_movement);
     create_fiber(track_score);
