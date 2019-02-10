@@ -10,6 +10,14 @@ to build. These can be obtained in multiple ways (mostly by googling how).
 
 In order to compile and load onto a MicroBit, you should just be able to run 
 "make" on a linux terminal from the pacman dir (the one with the MakeFile). 
+
+You WILL need to edit the MICROBIT_PATH variable in the MakeFile to whatever dir
+path your MicroBit resides on. For me this is:
+
+    /media/tom/MICROBIT
+
+however this can vary depending on environment.
+
 If this does not for some reason work, the source file "main.cpp" can be copied
 into a new or pre-existing project and compiled using yotta with the following:
 
@@ -17,6 +25,9 @@ into a new or pre-existing project and compiled using yotta with the following:
 2. CD to dir that would contain MakeFile.
 2. Set target using "yt target bbc-microbit-classic-gcc".
 3. Build with "yt build".
+
+The source file should in theory work when just copy pasted into the src dir
+of a different MicroBit project.
 
 ### Game Mechanics
 
@@ -29,3 +40,8 @@ The player character is moved around using the MicroBit's onboard accelerometer,
 and will "fall" towards whatever edge is closest to the ground. The enemies will
 move towards the player at a steady pace, and their spawn locations are randomly
 decided (which at this stage does mean they can spawn on top of you!).
+
+### Misc Details
+
+The project was coded in CLion using a combination of CMakeLists and a MakeFile
+to automatically run the commands necessary.
