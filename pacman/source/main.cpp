@@ -1,11 +1,10 @@
 #include "MicroBit.h"
 #include <vector>
 
-// TODO: Add difficulty and score scaling
-// TODO: Add some form of other input usage
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
+/*
+ * Precursor to Pacman created on a MicroBit. Created by Tom Goring for IoT challenge 1.
+ * Full Documentation can be found in README.md
+ */
 
 void handle_player_movement();
 void handle_enemy_movement();
@@ -13,7 +12,7 @@ void handle_screen_updates();
 void track_score();
 void initialise_game();
 void reset_enemies(MicroBitEvent);
-bool check_game_status();
+void check_game_over();
 
 class Player {
 public:
@@ -32,8 +31,8 @@ public:
     int16_t x;
     int16_t y;
     Enemy() {
-        x = rand() % 4;
-        y = rand() % 4;
+        x = static_cast<int16_t>(rand() % 4); // conversion just to make CLion happy
+        y = static_cast<int16_t>(rand() % 4);
     }
 };
 
@@ -51,12 +50,10 @@ int main() {
 
         uBit.display.scroll("PACMAN");
 
-        initialise_game();
+        initialise_game(); // creates all fibers and sets initial variables
 
-        while (!game_over) {
-
-            handle_screen_updates();
-            game_over = check_game_status();
+        while (!game_over) { // small sleep to prevent execution from locking
+            uBit.sleep(10);
         }
 
         uBit.display.clear();
@@ -68,6 +65,8 @@ int main() {
     }
 }
 
+// Polls accelerometers every 250ms and moves player coords in accordance - for use with a fiber, otherwise will lock
+// execution.
 void handle_player_movement() {
 
     while (!game_over) {
@@ -93,12 +92,14 @@ void handle_player_movement() {
     }
 }
 
+// Loops through each enemy every 500ms and move them each towards the x/y coords of the player. also creates a
+// new enemy at score 10 and 25
 void handle_enemy_movement() {
 
     uBit.sleep(2000);
 
     enemies.clear();
-    enemies.push_back(new Enemy);
+    enemies.push_back(new Enemy); // new enemies are spawned on a random tile
 
     while (!game_over) {
 
@@ -112,7 +113,6 @@ void handle_enemy_movement() {
 
             enemies.push_back(new Enemy());
         }
-
 
         for (Enemy* enemy : enemies) {
 
@@ -136,16 +136,21 @@ void handle_enemy_movement() {
     }
 }
 
+// Displays the current game state onto the grid every 10ms.
 void handle_screen_updates() {
 
-    uBit.sleep(10);
-    uBit.display.clear();
-    uBit.display.image.setPixelValue(player.x, player.y, 255);
-    for (Enemy* enemy : enemies) {
-        uBit.display.image.setPixelValue(enemy->x, enemy->y, 255);
+    while (!game_over) {
+
+        uBit.sleep(10);
+        uBit.display.clear();
+        uBit.display.image.setPixelValue(player.x, player.y, 255);
+        for (Enemy *enemy : enemies) {
+            uBit.display.image.setPixelValue(enemy->x, enemy->y, 255);
+        }
     }
 }
 
+// Increments score by number of enemies every 2.5 seconds.
 void track_score() {
 
     while (!game_over) {
@@ -159,17 +164,21 @@ void initialise_game() {
 
     game_over = false;
 
-    player.init();
+    player.init(); // set player initial coords to 2,2 (middle of grid)
     enemies.clear();
     create_fiber(handle_player_movement);
     create_fiber(handle_enemy_movement);
     create_fiber(track_score);
+    create_fiber(check_game_over);
+    create_fiber(handle_screen_updates);
 
+    // resets enemies if AB is detected
     uBit.messageBus.listen(MICROBIT_ID_BUTTON_AB, MICROBIT_BUTTON_EVT_CLICK, reset_enemies);
 
     uBit.display.image.setPixelValue(player.x, player.y, 255);
 }
 
+// Clears all enemies from the grid
 void reset_enemies(MicroBitEvent) {
 
     enemies.clear();
@@ -177,14 +186,16 @@ void reset_enemies(MicroBitEvent) {
     enemies.push_back(new Enemy());
 }
 
-bool check_game_status() {
+// Checks if any enemy occupies the same tile as the player, then sets the game_over flag accordingly.
+void check_game_over() {
 
-    for (Enemy* enemy : enemies) {
-        if (player.x == enemy->y && player.y == enemy->y) {
-            return true;
+    while (!game_over) {
+
+        uBit.sleep(10);
+        for (Enemy* enemy : enemies) {
+            if (player.x == enemy->x && player.y == enemy->y) {
+                game_over = true;
+            }
         }
     }
-    return false;
 }
-
-#pragma clang diagnostic pop
