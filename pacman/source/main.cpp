@@ -4,6 +4,8 @@
 /*
  * Precursor to Pacman created on a MicroBit. Created by Tom Goring for IoT challenge 1.
  * Full Documentation can be found in README.md
+ *
+ * Hopefully anything difficult to understand is commented, but to be honest, the code tells most the story here.
  */
 
 void handle_player_movement();
