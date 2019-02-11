@@ -16,6 +16,8 @@ void initialise_game();
 void reset_enemies(MicroBitEvent);
 void check_game_over();
 
+MicroBit             uBit;
+
 class Player {
 public:
     int16_t x;
@@ -33,13 +35,11 @@ public:
     int16_t x;
     int16_t y;
     Enemy() {
-        x = static_cast<int16_t>(rand() % 4); // conversion just to make CLion happy
-        y = static_cast<int16_t>(rand() % 4);
+        x = uBit.random(5);
+        y = uBit.random(5);
     }
 };
 
-
-MicroBit             uBit;
 std::vector<Enemy*>  enemies;
 Player               player;
 bool                 game_over;
